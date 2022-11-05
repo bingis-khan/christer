@@ -4,7 +4,6 @@ module Table where
 import Database.Selda
 import Database.Selda.SQLite (withSQLite)
 import Data.ByteString (ByteString)
-import Servant (FromHttpApiData)
 import Types.Types (Race, Gender, DecisionResult (..), ContactDigest (ContactDigest), PersonalData, PersonalData' (PersonalData))
 import qualified Types.Types as T
 import Types.Suggestion ( Suggestion(Suggestion) )
@@ -21,6 +20,9 @@ import Database.Selda.Nullable ((?!), (?==))
 import Control.Monad.Extra (whenJust)
 import qualified Data.Set as Set
 import Data.List (find)
+import Servant (FromHttpApiData, parseQueryParam)
+import Text.Read (readMaybe)
+import Data.Text (unpack)
 
 
 
@@ -72,6 +74,10 @@ data Verdict = Yay | Nay
   deriving (Bounded, Enum, Show, Read, Generic)
 
 instance SqlType Verdict
+instance FromHttpApiData Verdict where
+  parseQueryParam s = case readMaybe (unpack s) of
+    Just v -> Right v
+    Nothing -> Left "Invalid verdict value."
 
 data Relation = Relation
   { relationID :: ID Relation

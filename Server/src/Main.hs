@@ -54,7 +54,7 @@ type API
   :<|>  Auth :> "current" :> Get '[JSON] (Maybe Suggestion)
   
   -- There seems to be a bug with matching custom datatypes.
-  :<|>  Auth :> "decide" :> QueryParam' '[Required] "verdict" String :> Put '[JSON] DecisionResult
+  :<|>  Auth :> "decide" :> QueryParam' '[Required] "verdict" Verdict :> Put '[JSON] DecisionResult
 
   -- Pics (fileserver)
   -- todo
@@ -82,10 +82,8 @@ edit acc od = withDB undefined
 current :: Account -> App (Maybe Suggestion)
 current acc = withDB $ findMatch acc
 
-decide :: Account -> String -> App DecisionResult
-decide acc vs = case readMaybe vs of
-  Just v -> withDB $ decideMatch acc v
-  Nothing -> throw err500
+decide :: Account -> Verdict -> App DecisionResult
+decide acc = withDB . decideMatch acc
 
 contacts :: Account -> App [ContactDigest]
 contacts acc = withDB $ findContacts acc
