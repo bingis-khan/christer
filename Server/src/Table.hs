@@ -72,8 +72,6 @@ data Verdict = Yay | Nay
   deriving (Bounded, Enum, Show, Read, Generic)
 
 instance SqlType Verdict
-instance FromHttpApiData Verdict
-
 
 data Relation = Relation
   { relationID :: ID Relation
