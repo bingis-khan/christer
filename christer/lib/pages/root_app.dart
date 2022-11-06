@@ -24,9 +24,8 @@ class _RootAppState extends State<RootApp> {
     PreferredSizeWidget getAppBar() {
         var items = [
             pageIndex == 0 ? "assets/images/explore_active_icon.svg" : "assets/images/explore_icon.svg",
-            pageIndex == 1 ? "assets/images/likes_active_icon.svg" : "assets/images/likes_icon.svg",
-            pageIndex == 2 ? "assets/images/chat_active_icon.svg" : "assets/images/chat_icon.svg",
-            pageIndex == 3 ? "assets/images/account_active_icon.svg" : "assets/images/account_icon.svg",
+            pageIndex == 1 ? "assets/images/chat_active_icon.svg" : "assets/images/chat_icon.svg",
+            pageIndex == 2 ? "assets/images/account_active_icon.svg" : "assets/images/account_icon.svg",
         ];
 
         return AppBar(
@@ -55,7 +54,6 @@ class _RootAppState extends State<RootApp> {
         return IndexedStack(
             index: pageIndex,
             children: [
-                ExplorePage(),
                 ExplorePage(),
                 ChatPage(),
                 ExplorePage(),
