@@ -1,11 +1,8 @@
-import 'package:christer/pages/explore_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:christer/theme/colors.dart';
-//import 'package:christer/pages/account_page.dart';
 import 'package:christer/pages/chat_page.dart';
 import 'package:christer/pages/explore_page.dart';
-//import 'package:christer/pages/likes_page.dart';
 
 class RootApp extends StatefulWidget {
     @override
@@ -17,6 +14,14 @@ class _RootAppState extends State<RootApp> {
 
     @override
     Widget build(BuildContext context){
+        return Scaffold(
+            backgroundColor: white,
+            appBar: getAppBar(),
+            body: getBody(),
+        );
+    }
+
+    PreferredSizeWidget getAppBar() {
         var items = [
             pageIndex == 0 ? "assets/images/explore_active_icon.svg" : "assets/images/explore_icon.svg",
             pageIndex == 1 ? "assets/images/likes_active_icon.svg" : "assets/images/likes_icon.svg",
@@ -24,10 +29,8 @@ class _RootAppState extends State<RootApp> {
             pageIndex == 3 ? "assets/images/account_active_icon.svg" : "assets/images/account_icon.svg",
         ];
 
-        return Scaffold(
-            backgroundColor: white,
-            appBar: AppBar(
-                backgroundColor: white,
+        return AppBar(
+                backgroundColor: black,
                 elevation: 0,
                 title: Padding(
                     padding: const EdgeInsets.only(left: 10, right: 10),
@@ -45,9 +48,7 @@ class _RootAppState extends State<RootApp> {
                         }),
                     ),
                 ),
-            ),
-            body: getBody(),
-        );
+            );
     }
 
     Widget getBody() {
@@ -61,24 +62,4 @@ class _RootAppState extends State<RootApp> {
             ],
         );
     }
-    /*
-    Widget getAppBar() {
-        
-        return AppBar(
-            backgroundColor: white,
-            elevation: 0,
-            title: Row(
-                children: List.generate(items.length, (index){
-                    return IconButton(
-                        onPressed: () {
-                            setState((){
-                                pageIndex = index;
-                            });
-                        },
-                        icon: SvgPicture.asset(items[index]),
-                    );
-                }),
-            ),
-        );
-    }*/
 }
