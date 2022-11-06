@@ -40,6 +40,7 @@ dependencies:
   line_icons:
   flutter_svg:
   flutter_custom_clippers: ^1.1.2
+  swipe_cards: ^1.0.0
 
 dev_dependencies:
   flutter_test:
