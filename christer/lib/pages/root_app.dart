@@ -54,7 +54,7 @@ class _RootAppState extends State<RootApp> {
         return IndexedStack(
             index: pageIndex,
             children: [
-                ExplorePage(),
+                ChatPage(), //tmp
                 ChatPage(),
                 ExplorePage(),
             ],
