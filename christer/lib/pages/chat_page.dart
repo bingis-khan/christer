@@ -17,6 +17,8 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget getBody() {
+    var size = MediaQuery.of(context).size;
+    const MAX_LENGTH = 20;
     return ListView(
       children: [
         Padding(
@@ -76,23 +78,28 @@ class _ChatPageState extends State<ChatPage> {
                             ),
                           ),
                           
-                          Text(chats_json[index]['messages'].length > 0 ? 
-                          (
-                            (chats_json[index]['messages'][chats_json[index]['messages'].length - 1]['isYours'] ? 'You: ' : '') + 
-                            chats_json[index]['messages'][chats_json[index]['messages'].length - 1]['msg'] + ' - ' + 
-                            chats_json[index]['messages'][chats_json[index]['messages'].length - 1]['created_at']
-                          ) :
-                          "Say hi to your new match!", 
-                            style: const TextStyle(
-                              fontSize: 15,
-                              color: white,
+                          SizedBox(
+                            width: size.width - 150,
+                            child: Text(chats_json[index]['messages'].length > 0 ? 
+                            (
+                              (chats_json[index]['messages'][chats_json[index]['messages'].length - 1]['isYours'] ? 'You: ' : '') + 
+                              (
+                                chats_json[index]['messages'][chats_json[index]['messages'].length - 1]['msg'].length < MAX_LENGTH ? 
+                                chats_json[index]['messages'][chats_json[index]['messages'].length - 1]['msg'] : 
+                                chats_json[index]['messages'][chats_json[index]['messages'].length - 1]['msg'].substring(0, MAX_LENGTH) + ' ... '
+                              ) + ' - ' + 
+                              chats_json[index]['messages'][chats_json[index]['messages'].length - 1]['created_at']
+                            ) :
+                            "Say hi to your new match!", 
+                              style: const TextStyle(
+                                fontSize: 15,
+                                color: white,
+                              ),
                             ),
-                          ),
-                                                  
+                          ),                      
                         ],
                       ),
                     ),
-                    
                   ],
                 ),
               );
