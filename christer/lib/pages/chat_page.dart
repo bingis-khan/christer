@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:christer/model/user_chat.dart';
 import 'package:christer/theme/colors.dart';
 import 'package:christer/data/chats_json.dart';
+import 'package:christer/pages/user_chat_page.dart';
 
 class ChatPage extends StatefulWidget {
   @override
@@ -9,11 +11,11 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final myController = TextEditingController();
-  List chats = chats_json;
+  List<UserChat> chats = chats_json;
 
   void _updateChats(String name){
     final filtered_chats = chats_json.where((element) {
-      return element['name'].toLowerCase().contains(name.toLowerCase());
+      return element.name.toLowerCase().contains(name.toLowerCase());
     }).toList();
     setState(() {
       chats = filtered_chats;
@@ -64,63 +66,48 @@ class _ChatPageState extends State<ChatPage> {
           height: 5,
         ),
         Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(5),
           child: Column(
             children: List.generate(chats.length, (index) {
               return Padding(
                 padding: EdgeInsets.all(10),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 70,
-                      height: 70,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: AssetImage(chats[index]['img']),
-                          fit: BoxFit.cover,
-                        )
+                child: ListTile(
+                  onTap: (){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) =>  UserChatPage(userchat: chats[index]))
+                    );
+                  },
+                  visualDensity: VisualDensity(horizontal: 0, vertical: -4),
+                  contentPadding: EdgeInsets.only(left: 0.0, right: 0.0, top: 10, bottom: 10),
+                  leading: CircleAvatar(
+                    radius: 35,
+                    backgroundImage: AssetImage(chats[index].img),
+                  ),
+                  title: Text(chats[index].name, 
+                    style: const TextStyle(
+                      fontSize: 22,
+                      color: white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  subtitle: Text(chats[index].messages.length > 0 ? 
+                    (
+                      (chats[index].messages[chats[index].messages.length - 1].isYours ? 'You: ' : '') + 
+                      (
+                        chats[index].messages[chats[index].messages.length - 1].msg.length < MAX_LENGTH ? 
+                        chats[index].messages[chats[index].messages.length - 1].msg : 
+                        chats[index].messages[chats[index].messages.length - 1].msg.substring(0, MAX_LENGTH) + ' ... '
+                      ) + ' - ' + 
+                      chats[index].messages[chats[index].messages.length - 1].created_at
+                    ) :
+                    "Say hi to your new match!", 
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: white,
                       ),
                     ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(chats[index]['name'], 
-                            style: const TextStyle(
-                              fontSize: 22,
-                              color: white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          
-                          SizedBox(
-                            width: size.width - 150,
-                            child: Text(chats[index]['messages'].length > 0 ? 
-                            (
-                              (chats[index]['messages'][chats[index]['messages'].length - 1]['isYours'] ? 'You: ' : '') + 
-                              (
-                                chats[index]['messages'][chats[index]['messages'].length - 1]['msg'].length < MAX_LENGTH ? 
-                                chats[index]['messages'][chats[index]['messages'].length - 1]['msg'] : 
-                                chats[index]['messages'][chats[index]['messages'].length - 1]['msg'].substring(0, MAX_LENGTH) + ' ... '
-                              ) + ' - ' + 
-                              chats[index]['messages'][chats[index]['messages'].length - 1]['created_at']
-                            ) :
-                            "Say hi to your new match!", 
-                              style: const TextStyle(
-                                fontSize: 15,
-                                color: white,
-                              ),
-                            ),
-                          ),                      
-                        ],
-                      ),
-                    ),
-                  ],
+                  
                 ),
               );
             }

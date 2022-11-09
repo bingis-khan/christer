@@ -1,104 +1,83 @@
 // users story list
-const List chats_json = [
-  {
-    "img": "assets/images/girls/img_1.jpeg",
-    "name": "Ayo",
-    "messages": [],
-  },
-  {
-    "img": "assets/images/girls/img_2.jpeg",
-    "name": "Rondeau",
-    "messages": [
-      {
-        "isYours": true,
-        "msg": "Hello, how are you? :)",
-        "created_at": "1:12 pm"
-      },
-      {
-        "isYours": true,
-        "msg": "Hello?",
-        "created_at": "3:45 pm"
-      },
-      {
-        "isYours": false,
-        "msg": "I got a boyfriend",
-        "created_at": "3:50 pm"
-      },
+import 'package:christer/model/message.dart';
+import 'package:christer/model/user_chat.dart';
+
+List<UserChat> chats_json = [
+  UserChat(
+    img: "assets/images/girls/img_1.jpeg",
+    name: "Ayo",
+    messages: [],
+  ),
+  UserChat(
+    img: "assets/images/girls/img_2.jpeg",
+    name: "Rondeau",
+    messages: [
+      Message(
+        isYours: true,
+        msg: "Hello, how are you? :)",
+        created_at: "1:12 pm",
+      ),
+      Message(
+        isYours: true,
+        msg: "Hello?",
+        created_at: "3:45 pm",
+      ),
+      Message(
+        isYours: false,
+        msg: "I got a boyfriend.",
+        created_at: "4:57 pm",
+      ),
     ],
-  },
-  {
-    "img": "assets/images/girls/img_3.jpeg",
-    "name": "Valerie",
-    "messages": [
-      {
-        "isYours": true,
-        "msg": "Hi, how's your day? :)",
-        "created_at": "2:13 pm"
-      },
-      {
-        "isYours": false,
-        "msg": "Omae wa mou shindeiru",
-        "created_at": "2:45 pm"
-      },
+  ),
+  UserChat(
+    img: "assets/images/girls/img_3.jpeg",
+    name: "Valerie",
+    messages: [
+      Message(isYours: true, msg: "Hi, how's your day? :)", created_at: "2:13 pm"),
+      Message(isYours: false, msg: "Omae wa mou shindeiru", created_at: "2:45 pm"),
     ],
-  },
-  {
-    "img": "assets/images/girls/img_4.jpeg",
-    "name": "Mary",
-    "messages": [],
-  },
-  {
-    "img": "assets/images/girls/img_5.jpeg",
-    "name": "Angie",
-    "messages": [
-      {
-        "isYours": false,
-        "msg": "DO NOT EVER DARE WRITE TO ME",
-        "created_at": "1:12 pm"
-      },
-      {
-        "isYours": true,
-        "msg": "Ok, bye :(",
-        "created_at": "1:15 pm"
-      },
+  ),
+  UserChat(
+    img: "assets/images/girls/img_4.jpeg",
+    name: "Mary",
+    messages: [],
+  ),
+  UserChat(
+    img: "assets/images/girls/img_5.jpeg",
+    name: "Angie",
+    messages: [
+      Message(isYours: false, msg: "DO NOT EVER DARE WRITE TO ME", created_at: "1:12 pm"),
+      Message(isYours: true, msg: "Ok, bye :(", created_at: "1:15 pm"),
     ],
-  },
-  {
-    "img": "assets/images/girls/img_6.jpeg",
-    "name": "Anne",
-    "messages": [],
-  },
-  {
-    "img": "assets/images/girls/img_7.jpeg",
-    "name": "Fineas",
-    "messages": [],
-  },
-  {
-    "img": "assets/images/girls/img_8.jpeg",
-    "name": "Atikh",
-    "messages": [],
-  },
-  {
-    "img": "assets/images/girls/img_9.jpeg",
-    "name": "Campbell",
-    "messages": [],
-  },
-  {
-    "img": "assets/images/girls/img_10.jpeg",
-    "name": "Maya",
-    "messages": [
-      {
-        "isYours": true,
-        "msg": "Hello, how are you? :)",
-        "created_at": "2:34 pm"
-      },
-      {
-        "isYours": false,
-        "msg": "[USER BLOCKED YOU]",
-        "created_at": "2:35 pm"
-      },
+  ),
+  UserChat(
+    img: "assets/images/girls/img_6.jpeg",
+    name: "Anne",
+    messages: [],
+  ),
+  UserChat(
+    img: "assets/images/girls/img_7.jpeg",
+    name: "Fineas",
+    messages: [],
+  ),
+  UserChat(
+    img: "assets/images/girls/img_8.jpeg",
+    name: "Atikh",
+    messages: [],
+  ),
+  UserChat(
+    img: "assets/images/girls/img_9.jpeg",
+    name: "Campbell",
+    messages: [],
+  ),
+  UserChat(
+    img: "assets/images/girls/img_10.jpeg",
+    name: "Maya", 
+    messages: [
+      Message(isYours: true, msg: "Hello, how are you? :)", created_at: "2:34 pm"),
+      Message(isYours: false, msg: "[USER BLOCKED YOU]", created_at: "2:35 pm"),
     ],
-  },
+  ),
 ];
 
 // users message list

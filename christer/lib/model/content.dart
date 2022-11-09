@@ -1,5 +1,3 @@
-import 'package:flutter/animation.dart';
-
 class Content{
   String name;
   String image_path;
