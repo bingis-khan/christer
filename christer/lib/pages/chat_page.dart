@@ -8,12 +8,30 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  final myController = TextEditingController();
+  List chats = chats_json;
+
+  void _updateChats(String name){
+    final filtered_chats = chats_json.where((element) {
+      return element['name'].toLowerCase().contains(name.toLowerCase());
+    }).toList();
+    setState(() {
+      chats = filtered_chats;
+    });
+  }
+
   @override
   Widget build(BuildContext context){
     return Scaffold(
       backgroundColor: black,
       body: getBody(),
     );
+  }
+
+  @override
+  void dispose() {
+    myController.dispose();
+    super.dispose();
   }
 
   Widget getBody() {
@@ -37,16 +55,18 @@ class _ChatPageState extends State<ChatPage> {
                     color: black.withOpacity(0.5),
                   ),
                   hintText: "Search"),
+                  controller: myController,
+                  onChanged: _updateChats,
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 5,
         ),
         Padding(
           padding: const EdgeInsets.all(10),
           child: Column(
-            children: List.generate(chats_json.length, (index) {
+            children: List.generate(chats.length, (index) {
               return Padding(
                 padding: EdgeInsets.all(10),
                 child: Row(
@@ -57,7 +77,7 @@ class _ChatPageState extends State<ChatPage> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
-                          image: AssetImage(chats_json[index]['img']),
+                          image: AssetImage(chats[index]['img']),
                           fit: BoxFit.cover,
                         )
                       ),
@@ -70,7 +90,7 @@ class _ChatPageState extends State<ChatPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(chats_json[index]['name'], 
+                          Text(chats[index]['name'], 
                             style: const TextStyle(
                               fontSize: 22,
                               color: white,
@@ -80,15 +100,15 @@ class _ChatPageState extends State<ChatPage> {
                           
                           SizedBox(
                             width: size.width - 150,
-                            child: Text(chats_json[index]['messages'].length > 0 ? 
+                            child: Text(chats[index]['messages'].length > 0 ? 
                             (
-                              (chats_json[index]['messages'][chats_json[index]['messages'].length - 1]['isYours'] ? 'You: ' : '') + 
+                              (chats[index]['messages'][chats[index]['messages'].length - 1]['isYours'] ? 'You: ' : '') + 
                               (
-                                chats_json[index]['messages'][chats_json[index]['messages'].length - 1]['msg'].length < MAX_LENGTH ? 
-                                chats_json[index]['messages'][chats_json[index]['messages'].length - 1]['msg'] : 
-                                chats_json[index]['messages'][chats_json[index]['messages'].length - 1]['msg'].substring(0, MAX_LENGTH) + ' ... '
+                                chats[index]['messages'][chats[index]['messages'].length - 1]['msg'].length < MAX_LENGTH ? 
+                                chats[index]['messages'][chats[index]['messages'].length - 1]['msg'] : 
+                                chats[index]['messages'][chats[index]['messages'].length - 1]['msg'].substring(0, MAX_LENGTH) + ' ... '
                               ) + ' - ' + 
-                              chats_json[index]['messages'][chats_json[index]['messages'].length - 1]['created_at']
+                              chats[index]['messages'][chats[index]['messages'].length - 1]['created_at']
                             ) :
                             "Say hi to your new match!", 
                               style: const TextStyle(
