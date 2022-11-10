@@ -20,7 +20,60 @@ class _UserChatPageState extends State<UserChatPage> {
         title: Text(widget.userchat.name),
         backgroundColor: black,
       ),
-      body: Text(widget.userchat.name),
+      backgroundColor: primary,
+      body: Padding(
+        padding: EdgeInsets.all(10),
+        child: Container(
+          height: 48,
+          decoration: BoxDecoration(
+              color: white.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(24)),
+          child: SafeArea(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.0 * 0.75,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF00BF6D).withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(40),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            decoration: InputDecoration(
+                              hintText: "Type message",
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.send,
+                            color: Theme.of(context)
+                                .textTheme
+                                .bodyText1!
+                                .color!
+                                .withOpacity(0.64),
+                          ),
+                          tooltip: "Send",
+                          onPressed: (){
+                            print("Message sent!");
+                          },
+                        ),
+                        
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
