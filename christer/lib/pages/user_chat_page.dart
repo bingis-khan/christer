@@ -120,6 +120,7 @@ class _UserChatPageState extends State<UserChatPage> {
                               //local insert
                               setState((){
                                 widget.userchat.messages.add(Message(isYours: true, msg: "${myController.text}", created_at: "2:22 pm"));
+                                myController.text = "";
                               });
                             },
                           ),
