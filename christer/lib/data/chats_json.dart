@@ -35,6 +35,16 @@ List<UserChat> chats_json = [
     messages: [
       Message(isYours: true, msg: "Hi, how's your day? :)", created_at: "2:13 pm"),
       Message(isYours: false, msg: "Omae wa mou shindeiru", created_at: "2:45 pm"),
+      Message(isYours: true, msg: "Hi, how's your day? :)", created_at: "2:13 pm"),
+      Message(isYours: false, msg: "Omae wa mou shindeiru2", created_at: "2:45 pm"),
+      Message(isYours: true, msg: "Hi, how's your day? :)", created_at: "2:13 pm"),
+      Message(isYours: false, msg: "Omae wa mou shindeiru3", created_at: "2:45 pm"),
+      Message(isYours: true, msg: "Hi, how's your day? :)", created_at: "2:13 pm"),
+      Message(isYours: false, msg: "Omae wa mou shindeiru4", created_at: "2:45 pm"),
+      Message(isYours: true, msg: "Hi, how's your day? :)", created_at: "2:13 pm"),
+      Message(isYours: false, msg: "Omae wa mou shindeiru5", created_at: "2:45 pm"),
+      Message(isYours: true, msg: "Hi, how's your day? :)", created_at: "2:13 pm"),
+      Message(isYours: false, msg: "Omae wa mou shindeiru6", created_at: "2:45 pm"),
     ],
   ),
   UserChat(
