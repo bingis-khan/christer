@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:christer/model/user_chat.dart';
 import 'package:christer/theme/colors.dart';
 import 'package:christer/model/message.dart';

@@ -1,8 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:christer/theme/colors.dart';
 import 'package:christer/pages/chat_page.dart';
 import 'package:christer/pages/explore_page.dart';
+import 'package:christer/pages/account_page.dart';
 
 class RootApp extends StatefulWidget {
     @override
@@ -56,7 +58,7 @@ class _RootAppState extends State<RootApp> {
             children: [
                 ExplorePage(),
                 ChatPage(),
-                ExplorePage(),
+                AccountPage()
             ],
         );
     }
