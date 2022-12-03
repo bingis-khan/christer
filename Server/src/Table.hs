@@ -4,6 +4,7 @@ module Table where
 import Database.Selda
 import Database.Selda.SQLite (withSQLite)
 import Data.ByteString (ByteString)
+import qualified Data.ByteString.Lazy as LBS 
 import Types.Types (Race, Gender, DecisionResult (..), ContactDigest (ContactDigest), PersonalData, PersonalData' (PersonalData))
 import qualified Types.Types as T
 import Types.Suggestion ( Suggestion(Suggestion) )
@@ -23,6 +24,7 @@ import Data.List (find)
 import Servant (FromHttpApiData, parseQueryParam)
 import Text.Read (readMaybe)
 import Data.Text (unpack)
+import Data.Int (Int64)
 
 
 
@@ -79,6 +81,7 @@ instance FromHttpApiData Verdict where
     Just v -> Right v
     Nothing -> Left "Invalid verdict value."
 
+
 data Relation = Relation
   { relationID :: ID Relation
 
@@ -91,9 +94,21 @@ data Relation = Relation
 
 instance SqlRow Relation
 
-
 relations :: Table Relation
 relations = table "relations" [#relationID :- autoPrimary]
+
+
+data Pic = Pic
+  { picID :: ID Pic
+  , picOf :: ID Person
+  , picMIME :: Text
+  , picData :: LBS.ByteString
+  } deriving Generic
+
+instance SqlRow Pic
+
+pics :: Table Pic
+pics = table "pics" [#picID :- autoPrimary]
 
 
 -- Used for state.
@@ -108,6 +123,7 @@ initDB path = withSQLite path $ do
   tryCreateTable lambsToTheSlaughter 
   tryCreateTable messages
   tryCreateTable relations
+  tryCreateTable pics
 
 
 candidate :: MonadSelda m => Account -> m (Maybe Person)
@@ -181,7 +197,8 @@ diffToAge birth now =
 
 personToSuggestion :: UTCTime -> Person -> Suggestion
 personToSuggestion now Person 
-  { firstName
+  { pid
+  , firstName
   , lastName
   , height
   , race
@@ -194,6 +211,7 @@ personToSuggestion now Person
     , S.height = height
     , S.race = race
     , S.description = description
+    , S.imageID = fromId pid
     }
 
 
@@ -309,3 +327,20 @@ findContacts acc@Account { person = u } = do
     , T.block = b
     , T.senderData = personToPersonalData p
     }
+
+
+addPic :: (MonadSelda m, MonadMask m) => Account -> Text -> LBS.ByteString -> m ()
+addPic Account { person } mime content = transaction $ do
+  -- First, remove existing picture.
+  deleteFrom_ pics $ \r -> r ! #picOf .== literal person
+  
+  -- Then, save dat nigga
+  insert_ pics [Pic { picID = def, picOf = person, picMIME = mime, picData = content }]
+
+getPic :: MonadSelda m => Int64 -> m (Maybe (Text, LBS.ByteString))
+getPic iPersonID =
+  let personId = toId iPersonID
+  in fmap (fmap (\(mime :*: content) -> (mime, content)) . listToMaybe) $ query $ limit 0 1 $ do
+    pic <- select pics
+    restrict $ pic ! #picOf .== literal personId
+    return $ pic ! #picMIME :*: pic ! #picData

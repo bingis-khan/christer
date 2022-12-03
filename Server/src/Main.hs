@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds, TypeOperators, DeriveGeneric, OverloadedStrings, FlexibleInstances #-}
+{-# LANGUAGE LambdaCase #-}
 module Main (main) where
 
 import Servant
@@ -6,12 +7,12 @@ import Auth (Auth, serverContext, Account, RegisterError)
 import qualified Auth
 import Data.Aeson (ToJSON)
 import GHC.Generics (Generic)
-import Network.Wai.Handler.Warp (run)
+import Network.Wai.Handler.Warp (run, runSettings, setPort, defaultSettings)
 import Data.Aeson.Types (FromJSON)
 import Data.Text
 import Control.Monad.Trans.Reader (ReaderT, runReaderT, ask)
 import Database.Selda
-import Table (initDB, Verdict, findMatch, decideMatch, findContacts, candidate, Person (pid))
+import Table (initDB, Verdict, findMatch, decideMatch, findContacts, addPic, getPic)
 import Servant.API.WebSocket (WebSocketPending, WebSocket)
 import Chat (chatApp)
 import qualified Network.WebSockets as WS
@@ -27,6 +28,12 @@ import Database.Selda.SQLite (withSQLite, SQLite)
 import Data.List.NonEmpty (NonEmpty)
 import Text.Read (readMaybe)
 import Control.Exception (throw)
+import Servant.Multipart
+import Control.Monad.Extra (when)
+import Control.Monad (unless)
+import Network.Wai.Parse (noLimitParseRequestBodyOptions)
+import qualified Data.ByteString.Lazy as LBS
+import Data.Functor ((<&>))
 
 
 -- Monad for tha request context.
@@ -57,7 +64,8 @@ type API
   :<|>  Auth :> "decide" :> QueryParam' '[Required] "verdict" Verdict :> Put '[JSON] DecisionResult
 
   -- Pics (fileserver)
-  -- todo
+  :<|>  Auth :> "post-pic" :> MultipartForm Mem (MultipartData Mem) :> PostNoContent
+  :<|>  "pic" :> Capture "id" Int64 :> Get '[OctetStream] (Headers '[Header "Content-Type" Text] LBS.ByteString)
 
   -- Messaging
   :<|>  Auth :> "contacts" :> Get '[JSON] [ContactDigest]
@@ -65,7 +73,7 @@ type API
 
 
   -- fuck
-  :<|>  "chat"  :> WebSocket
+  :<|>  Auth :> "chat" :> WebSocket
 
 
 
@@ -85,6 +93,32 @@ current acc = withDB $ findMatch acc
 decide :: Account -> Verdict -> App DecisionResult
 decide acc = withDB . decideMatch acc
 
+postPic :: Account -> MultipartData Mem -> App NoContent
+postPic acc mpd = do
+  -- Bad, but I don't care.
+  -- Get the only file, otherwise throw error.
+  liftIO $ print $ files mpd 
+  liftIO $ print $ inputs mpd
+  case files mpd of
+    [pic] -> do
+      -- Basic & bad validation
+      let mime = fdFileCType pic
+      liftIO $ print mime
+      unless ("image/" `isPrefixOf` mime) $
+        throw $ err400 { errBody = "Invalid MIME type." }
+
+      let content = fdPayload pic
+      withDB $ addPic acc mime content
+      return NoContent
+    [] -> throw $ err400 { errBody = "No files..." }
+    _ -> throw $ err400 { errBody = "Only a single file allowed." }
+
+pic :: Int64 -> App (Headers '[Header "Content-Type" Text] LBS.ByteString)
+pic picId = withDB (getPic picId) >>= \case
+  Nothing -> throw err404  -- Oh no, it's so bad.
+  Just (mime, content) -> do
+    return $ addHeader mime content
+
 contacts :: Account -> App [ContactDigest]
 contacts acc = withDB $ findContacts acc
 
@@ -97,6 +131,8 @@ server
   :<|>  edit
   :<|>  current
   :<|>  decide
+  :<|>  postPic
+  :<|>  pic
   :<|>  contacts
   :<|>  messages
   :<|>  undefined
@@ -104,8 +140,14 @@ server
 nt :: FilePath -> App a -> Handler a
 nt fp = (`runReaderT` fp) 
 
+myMultipartOptions :: MultipartOptions Mem
+myMultipartOptions = MultipartOptions
+  { generalOptions = noLimitParseRequestBodyOptions
+  , backendOptions = ()
+  }
+
 startServer :: FilePath -> IO ()
-startServer fp = run 8080 $ logStdoutDev $ serveWithContextT (Proxy :: Proxy API) (serverContext fp) (nt fp) server
+startServer fp = run 8080 $ logStdoutDev $ serveWithContextT (Proxy :: Proxy API) (myMultipartOptions :. serverContext fp) (nt fp) server
 
 main :: IO ()
 main = do

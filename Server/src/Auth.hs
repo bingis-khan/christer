@@ -123,5 +123,5 @@ authUser db = BasicAuthCheck $ \(BasicAuthData email' password') ->
       password = hashPassword $ UncheckedPassword $ decodeUtf8 password' 
   in login db email password
 
-serverContext :: FilePath -> Context (BasicAuthCheck Account ': '[]) 
+serverContext :: FilePath -> Context '[BasicAuthCheck Account]
 serverContext db = authUser db :. EmptyContext
