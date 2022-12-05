@@ -1,9 +1,7 @@
+import 'package:christer/pages/root_app.dart';
 import 'package:christer/theme/colors.dart';
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(const EditPage());
-}
+import 'account_page.dart';
 
 class EditPage extends StatelessWidget {
   const EditPage({Key? key}) : super(key: key);
@@ -36,11 +34,10 @@ class _FormPageState extends State<FormPage> {
         title: Text(widget.title),
         backgroundColor: black,
       ),
-      
       body: Container(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
           child: SignUpForm()),
-          backgroundColor: white,
+      backgroundColor: white,
     );
   }
 }
@@ -107,9 +104,6 @@ class _SignUpFormState extends State<SignUpForm> {
       },
     ));
 
-
-
-
     formWidget.add(TextFormField(
       decoration:
           const InputDecoration(hintText: 'Age', labelText: 'Enter Age'),
@@ -163,9 +157,23 @@ class _SignUpFormState extends State<SignUpForm> {
     }
 
     formWidget.add(ElevatedButton(
-        child: const Text('Submit'), onPressed: onPressedSubmit, style: ElevatedButton.styleFrom(
-          primary: Colors.black
-        ),));
+      child: const Text('Submit'),
+      onPressed: onPressedSubmit,
+      style: ElevatedButton.styleFrom(primary: Colors.black),
+    ));
+
+    formWidget.add(Container(
+      margin: const EdgeInsets.only(top: 10.0),
+      child: ElevatedButton(
+        child: const Text('Cancel'),
+        onPressed: () {
+          Navigator.push(context,
+          new MaterialPageRoute(builder: (_) => new RootApp())
+          );
+        },
+        style: ElevatedButton.styleFrom(primary: Colors.black),
+      ),
+    ));
 
     return formWidget;
   }

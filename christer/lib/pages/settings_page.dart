@@ -1,9 +1,8 @@
+import 'package:christer/pages/account_page.dart';
+import 'package:christer/pages/root_app.dart';
 import 'package:christer/theme/colors.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const SettingsPage());
-}
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -173,6 +172,19 @@ class _SignUpFormState extends State<SignUpForm> {
       child: const Text('Submit'),
       onPressed: onPressedSubmit,
       style: ElevatedButton.styleFrom(primary: Colors.black),
+    ));
+
+    formWidget.add(Container(
+      margin: const EdgeInsets.only(top: 10.0),
+      child: ElevatedButton(
+        child: const Text('Cancel'),
+        onPressed: () {
+          Navigator.push(context,
+          new MaterialPageRoute(builder: (_) => new RootApp())
+          );
+        },
+        style: ElevatedButton.styleFrom(primary: Colors.black),
+      ),
     ));
 
     return formWidget;
