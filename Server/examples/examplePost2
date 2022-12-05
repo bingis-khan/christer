@@ -1,0 +1,1 @@
+curl -d '{ "email": "bimbiks@b.ob", "password": "bobbobbob", "personal": { "firstName": "bimbur", "lastName": "borbur", "gender": "Genderlord", "dateOfBirth": "2000-11-05T03:51:09.967925217Z", "height": 194, "description": "asdasdas", "race": "Polish" } }' -H 'Content-Type: application/json' -iXPOST localhost:8080/register
