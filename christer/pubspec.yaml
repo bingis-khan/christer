@@ -41,6 +41,12 @@ dependencies:
   flutter_svg:
   flutter_custom_clippers: ^1.1.2
   swipe_cards: ^1.0.0
+  http: ^0.13.5
+  sync_http: ^0.3.1
+  flutter_login: ^4.1.0
+  appinio_swiper: ^1.1.1
+  swipeable_card_stack: ^0.0.5
+  provider: ^6.0.4
 
 dev_dependencies:
   flutter_test:
