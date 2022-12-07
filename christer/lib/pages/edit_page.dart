@@ -8,12 +8,7 @@ class EditPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Edit Profile',
-      theme: ThemeData(brightness: Brightness.light),
-      home: const FormPage(title: 'Edit Profile'),
-    );
+    return const FormPage(title: 'Edit Profile');
   }
 }
 
@@ -167,9 +162,7 @@ class _SignUpFormState extends State<SignUpForm> {
       child: ElevatedButton(
         child: const Text('Cancel'),
         onPressed: () {
-          Navigator.push(context,
-          new MaterialPageRoute(builder: (_) => new RootApp())
-          );
+          Navigator.pop(context);
         },
         style: ElevatedButton.styleFrom(primary: Colors.black),
       ),

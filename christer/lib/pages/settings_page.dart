@@ -3,18 +3,12 @@ import 'package:christer/pages/root_app.dart';
 import 'package:christer/theme/colors.dart';
 import 'package:flutter/material.dart';
 
-
 class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Settings',
-      theme: ThemeData(brightness: Brightness.light),
-      home: const FormPage(title: 'Settings'),
-    );
+    return const FormPage(title: 'Settings');
   }
 }
 
@@ -179,9 +173,7 @@ class _SignUpFormState extends State<SignUpForm> {
       child: ElevatedButton(
         child: const Text('Cancel'),
         onPressed: () {
-          Navigator.push(context,
-          new MaterialPageRoute(builder: (_) => new RootApp())
-          );
+          Navigator.pop(context);
         },
         style: ElevatedButton.styleFrom(primary: Colors.black),
       ),
