@@ -1,6 +1,7 @@
 import 'package:christer/data/account_json.dart';
 import 'package:christer/pages/edit_page.dart';
 import 'package:christer/pages/settings_page.dart';
+import 'package:christer/pages/image_picker.dart';
 import 'package:christer/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
@@ -121,10 +122,17 @@ class _AccountPageState extends State<AccountPage> {
                                       spreadRadius: 10,
                                     )
                                   ]),
-                              child: Icon(
+                              child: IconButton(
                                 color: white,
-                                Icons.camera_alt,
-                                size: 45,
+                                icon: Icon(Icons.camera_alt),
+                                iconSize: 45,
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => PickPhotoScreen()),
+                                  );
+                                },
                               ),
                             ),
                             Positioned(
