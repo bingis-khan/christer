@@ -13,10 +13,10 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: grey.withOpacity(0.2),
-      body: getBody(),
-    );
+      return Scaffold(
+        backgroundColor: grey.withOpacity(0.2),
+        body: getBody(),
+      );
   }
 
   Widget getBody() {

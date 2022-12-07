@@ -1,4 +1,6 @@
 
+import 'package:christer/pages/edit_page.dart';
+import 'package:christer/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:christer/theme/colors.dart';
@@ -27,7 +29,7 @@ class _RootAppState extends State<RootApp> {
         var items = [
             pageIndex == 0 ? "assets/images/explore_active_icon.svg" : "assets/images/explore_icon.svg",
             pageIndex == 1 ? "assets/images/chat_active_icon.svg" : "assets/images/chat_icon.svg",
-            pageIndex == 2 ? "assets/images/account_active_icon.svg" : "assets/images/account_icon.svg",
+            pageIndex == 2 ? "assets/images/account_active_icon.svg" : "assets/images/account_icon.svg"
         ];
 
         return AppBar(
@@ -58,7 +60,9 @@ class _RootAppState extends State<RootApp> {
             children: [
                 ExplorePage(),
                 ChatPage(),
-                AccountPage()
+                AccountPage(),
+                EditPage(),
+                SettingsPage()
             ],
         );
     }
