@@ -75,3 +75,4 @@ data ContactDigest = ContactDigest
   } deriving Generic
 
 instance ToJSON ContactDigest
+instance FromJSON ContactDigest

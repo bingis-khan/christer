@@ -23,6 +23,7 @@ import Data.Maybe (listToMaybe)
 import Servant.Server (BasicAuthResult(..))
 import Data.Aeson (ToJSON)
 import GHC.Generics (Generic)
+import Data.Aeson.Types (FromJSON)
 
 
 type Auth = BasicAuth "bobby-auth" Account 
@@ -39,7 +40,7 @@ data RegisterError
   deriving Generic
 
 instance ToJSON RegisterError
-
+instance FromJSON RegisterError
 
 type Validate a = Validation (NonEmpty RegisterError) a
 newtype UCEmail = UncheckedEmail { fromUCEmail :: Text }
@@ -74,7 +75,7 @@ validateEmail email = fmap ((validateEmailStructure email <*) . (checkIfEmailIsT
 
 validatePasswordLength :: UCPassword -> Validate UCPassword
 validatePasswordLength (UncheckedPassword pass)
-  | Text.length pass < 8 = Failure $ pure PasswordTooShort
+  | Text.length pass < 3 = Failure $ pure PasswordTooShort
   | Text.length pass > 256 = Failure $ pure PasswordTooLong
   | otherwise = Success $ UncheckedPassword pass
 

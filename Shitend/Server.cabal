@@ -18,11 +18,57 @@ executable Server
   hs-source-dirs:      src
   main-is:             Main.hs
   other-modules:       Auth
+                     , API
                      , Table
                      , Types.Types
                      , Types.Suggestion
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5
+                     , servant-multipart-client
+                     , transformers
+                     , containers
+                     , servant-server
+                     , servant-multipart
+                     , text
+                     , aeson
+                     , wai
+                     , wai-extra
+                     , warp
+                     , selda
+                     , selda-sqlite
+                     , websockets
+                     , servant-websockets
+                     , stm
+                     , time
+                     , bytestring
+                     , either
+                     , cryptohash-sha256
+                     , email-validate
+                     , extra
+  ghc-options:         -Wall
+                       -Wcompat
+                       -Widentities
+                       -Wincomplete-record-updates
+                       -Wincomplete-uni-patterns
+                       -Wmissing-export-lists
+                       -Wmissing-home-modules
+                       -Wpartial-fields
+                       -Wredundant-constraints
+
+executable Filler
+  hs-source-dirs:      src
+  main-is:             Filler.hs
+  other-modules:       API
+                     , Auth
+                     , Table
+                     , Types.Types
+                     , Types.Suggestion
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
+                     , random
+                     , http-client
+                     , servant-client
+                     , servant-multipart-client
                      , transformers
                      , containers
                      , servant-server

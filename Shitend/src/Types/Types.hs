@@ -33,7 +33,7 @@ data PersonalData = PersonalData
   , gender :: Maybe Gender
   , dateOfBirth :: Maybe UTCTime
   , height :: Maybe Int
-  , description :: Text
+  , description :: Maybe Text
   , race :: Maybe Race
   } deriving Generic
 
@@ -47,6 +47,7 @@ data RegisterProfile = RegisterProfile
   } deriving Generic
 
 instance FromJSON RegisterProfile
+instance ToJSON RegisterProfile
 
 
 data ContactDigest = ContactDigest
@@ -57,3 +58,4 @@ data ContactDigest = ContactDigest
   } deriving Generic
 
 instance ToJSON ContactDigest
+instance FromJSON ContactDigest

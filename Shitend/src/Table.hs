@@ -12,7 +12,7 @@ import qualified Data.ByteString.Lazy as LBS
 import qualified Types.Types as T
 import Data.Functor.Identity (runIdentity)
 import Data.Int (Int64)
-import Data.Maybe (listToMaybe, fromJust)
+import Data.Maybe (listToMaybe, fromJust, fromMaybe)
 import qualified Data.Set as Set
 import Types.Suggestion (Suggestion(Suggestion))
 import qualified Types.Suggestion as S
@@ -21,6 +21,7 @@ import Data.Time (getCurrentTime)
 import Data.Time.Calendar (toGregorian)
 import Data.Time.Clock (utctDay)
 import Control.Monad (void)
+import Data.Text (pack)
 
 
 -- Tables
@@ -70,6 +71,8 @@ instance FromHttpApiData Verdict where
   parseQueryParam s = case readMaybe (unpack s) of
     Just v -> Right v
     Nothing -> Left "Invalid verdict value."
+instance ToHttpApiData Verdict where
+  toQueryParam = pack . show
 
 
 data Relation = Relation
@@ -124,7 +127,7 @@ personToPersonalData Person { firstName, lastName, height, gender, dateOfBirth, 
   , T.height = height
   , T.gender = gender
   , T.dateOfBirth = dateOfBirth
-  , T.description = description
+  , T.description = Just description
   , T.race = race
   }
 
@@ -139,7 +142,7 @@ personalDataToPerson PersonalData { T.firstName, T.lastName, T.gender, T.dateOfB
   , height = height
   , gender = gender
   , dateOfBirth = dateOfBirth
-  , description = description
+  , description = fromMaybe mempty description
   , race = race
   }
 
@@ -209,6 +212,48 @@ findMatches acc = do
   now <- liftIO getCurrentTime 
   return $ map (personToSuggestion now) people
 
+
+editProfile :: Account -> PersonalData -> SeldaM b ()
+editProfile acc pd = do
+  u <- getYourself acc
+  let newPerson = merge pd u
+  updatePerson (pid u) (const (row newPerson))
+
+
+merge :: PersonalData -> Person -> Person
+merge PersonalData { T.firstName = pdfn, T.lastName = pdln, T.dateOfBirth = pddob, T.height = pdh, T.race = pdr, T.gender = pdg, T.description = pdd } Person { pid, email, password, firstName, lastName, dateOfBirth, height, race, gender, description } =
+  let 
+    fm :: Maybe a -> Maybe a -> Maybe a
+    fm _ (Just x) = Just x 
+    fm x Nothing = x
+  in Person
+    { pid = pid
+
+    -- Login data
+    , email = email
+    , password = password
+
+    -- Personal data
+    , firstName = fm firstName pdfn
+    , lastName = fm lastName pdln
+    , dateOfBirth = fm dateOfBirth pddob
+    , height = fm height pdh
+    , race = fm race pdr
+    , gender = fm gender pdg
+    , description = fromMaybe description pdd
+    }
+
+getYourself :: MonadSelda m => Account -> m Person
+-- before you check yourself
+getYourself Account { person } = findPerson person
+
+findPerson :: MonadSelda m => ID Person -> m Person 
+findPerson person = do
+  mPerson <- fmap listToMaybe $ query $ limit 0 1 $ do
+    p <- select lambsToTheSlaughter
+    restrict $ p ! #pid .== literal person
+    return p
+  return $ fromJust mPerson  -- We assume account is always valid.
 
 -- Returns false if there are no matches.
 decideMatch :: Account -> Int64 -> Verdict -> SeldaM b ()

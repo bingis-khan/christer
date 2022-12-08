@@ -12,7 +12,7 @@ import Data.Aeson.Types (FromJSON)
 import Data.Text
 import Control.Monad.Trans.Reader (ReaderT, runReaderT, ask)
 import Database.Selda
-import Table (initDB, Verdict, addPic, getPic, findContacts, findMatches, decideMatch)
+import Table (initDB, Verdict, addPic, getPic, findContacts, findMatches, decideMatch, editProfile)
 import Servant.API.WebSocket (WebSocketPending, WebSocket)
 
 import qualified Network.WebSockets as WS
@@ -29,6 +29,10 @@ import Data.List.NonEmpty (NonEmpty)
 import Text.Read (readMaybe)
 import Control.Exception (throw)
 import Servant.Multipart
+    ( MultipartOptions(..),
+      FileData(fdPayload, fdFileCType),
+      Mem,
+      MultipartData(files, inputs) )
 import Control.Monad.Extra (when)
 import Control.Monad (unless)
 import Network.Wai.Parse (noLimitParseRequestBodyOptions)
@@ -36,43 +40,9 @@ import qualified Data.ByteString.Lazy as LBS
 import Data.Functor ((<&>))
 import Control.Concurrent (forkIO)
 import Control.Monad (void)
+import API
 
 
--- Monad for tha request context.
-type App = ReaderT FilePath Handler
-
-
-
-
-data Message = Message
-  { content :: Text
-  , outgoing :: Bool
-  , sendDate :: UTCTime
-  } deriving Generic
-instance ToJSON Message
-
-
--- Whole API
-type API
-  -- Setup
-  =     "register" :> ReqBody '[JSON] RegisterProfile :> Post '[JSON] (Maybe (NonEmpty RegisterError))
-
-  -- Edit data
-  :<|>  Auth :> "edit" :> ReqBody '[JSON] PersonalData :> PutNoContent
-
-  -- Matching
-  :<|>  Auth :> "suggestions" :> Get '[JSON] [Suggestion]
-  
-  -- There seems to be a bug with matching custom datatypes.
-  :<|>  Auth :> Capture "id" Int64 :> "decide" :> QueryParam' '[Required] "verdict" Verdict :> Put '[JSON] NoContent
-
-  -- Pics (fileserver)
-  :<|>  Auth :> "post-pic" :> MultipartForm Mem (MultipartData Mem) :> PostNoContent
-  :<|>  "pic" :> Capture "id" Int64 :> Get '[OctetStream] (Headers '[Header "Content-Type" Text] LBS.ByteString)
-
-  -- Messaging
-  :<|>  Auth :> "contacts" :> Get '[JSON] [ContactDigest]
-  :<|>  Auth :> "messages" :> Capture "recipient" Int64 :> Get '[JSON] [Message]
 
 
 
@@ -84,7 +54,7 @@ register :: RegisterProfile -> App (Maybe (NonEmpty RegisterError))
 register rp = withDB (Auth.register rp)
 
 edit :: Account -> PersonalData -> App NoContent
-edit acc od = withDB undefined
+edit acc od = fmap (const NoContent) $ withDB $ editProfile acc od
 
 current :: Account -> App [Suggestion]
 current acc = withDB $ findMatches acc
@@ -96,8 +66,6 @@ postPic :: Account -> MultipartData Mem -> App NoContent
 postPic acc mpd = do
   -- Bad, but I don't care.
   -- Get the only file, otherwise throw error.
-  liftIO $ print $ files mpd 
-  liftIO $ print $ inputs mpd
   case files mpd of
     [pic] -> do
       -- Basic & bad validation
@@ -126,12 +94,12 @@ messages = undefined
 
 server :: ServerT API App
 server 
-  =     register
+  =     (postPic
+  :<|>  pic)
+  :<|>  register
   :<|>  edit
   :<|>  current
   :<|>  decide
-  :<|>  postPic
-  :<|>  pic
   :<|>  contacts
   :<|>  messages
 
@@ -154,9 +122,9 @@ main = do
   initDB db
 
 
-  void $ forkIO $ WS.runServer "localhost" 8080 $ WS.acceptRequest >=> \conn -> forever $ do
-    x <- WS.receiveData conn
-    WS.sendTextData conn (x :: Text)
+  -- void $ forkIO $ WS.runServer "localhost" 8080 $ WS.acceptRequest >=> \conn -> forever $ do
+  --   x <- WS.receiveData conn
+  --   WS.sendTextData conn (x :: Text)
   
   startServer db
   
