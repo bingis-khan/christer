@@ -28,7 +28,7 @@ class _AccountPageState extends State<AccountPage> {
       clipper: OvalBottomBorderClipper(),
       child: Container(
         width: size.width,
-        height: size.height * 0.6,
+        height: size.height * 0.7,
         decoration: BoxDecoration(color: white, boxShadow: [
           BoxShadow(
               color: grey.withOpacity(0.1), spreadRadius: 10, blurRadius: 10)
@@ -211,7 +211,32 @@ class _AccountPageState extends State<AccountPage> {
                 ),
               ],
             ),
+            SizedBox(height: 25,),
+            CustomButton(
+              title: 'Log out',
+              icon: Icons.logout,
+              onClick: () => {}
+            ),
           ]),
+        ),
+      ),
+    );
+  }
+
+  Widget CustomButton(
+      {required String title,
+      required IconData icon,
+      required VoidCallback onClick}) {
+    return Container(
+      width: 200,
+      child: ElevatedButton(
+        onPressed: onClick,
+        child: Row(
+          children: [
+            Icon(icon),
+            SizedBox(width: 20),
+            Text(title),
+          ],
         ),
       ),
     );
