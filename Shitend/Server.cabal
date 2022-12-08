@@ -1,0 +1,129 @@
+name:                Server
+version:             0.1.0.0
+-- synopsis:
+-- description:
+homepage:            https://github.com/githubuser/Server#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Author name here
+maintainer:          example@example.com
+copyright:           2022 Author name here
+category:            Web
+build-type:          Simple
+cabal-version:       >=1.10
+extra-source-files:  README.md
+                     CHANGELOG.md
+
+executable Server
+  hs-source-dirs:      src
+  main-is:             Main.hs
+  other-modules:       Auth
+                     , Table
+                     , Types.Types
+                     , Types.Suggestion
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
+                     , transformers
+                     , containers
+                     , servant-server
+                     , servant-multipart
+                     , text
+                     , aeson
+                     , wai
+                     , wai-extra
+                     , warp
+                     , selda
+                     , selda-sqlite
+                     , websockets
+                     , servant-websockets
+                     , stm
+                     , time
+                     , bytestring
+                     , either
+                     , cryptohash-sha256
+                     , email-validate
+                     , extra
+  ghc-options:         -Wall
+                       -Wcompat
+                       -Widentities
+                       -Wincomplete-record-updates
+                       -Wincomplete-uni-patterns
+                       -Wmissing-export-lists
+                       -Wmissing-home-modules
+                       -Wpartial-fields
+                       -Wredundant-constraints
+
+executable TestClient
+  hs-source-dirs:      src
+  main-is:             ChatClient.hs
+  other-modules:       Auth
+                     , Table
+                     , Types.Suggestion
+                     , Types.Types
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
+                     , transformers
+                     , containers
+                     , servant-server
+                     , text
+                     , aeson
+                     , wai
+                     , warp
+                     , selda
+                     , selda-sqlite
+                     , websockets
+                     , servant-websockets
+                     , stm
+                     , time
+                     , network
+                     , base64
+                     , bytestring
+                     , email-validate
+                     , either
+                     , cryptohash-sha256
+  ghc-options:         -Wall
+                       -Wcompat
+                       -Widentities
+                       -Wincomplete-record-updates
+                       -Wincomplete-uni-patterns
+                       -Wmissing-export-lists
+                       -Wmissing-home-modules
+                       -Wpartial-fields
+                       -Wredundant-constraints
+
+
+executable FileClient
+  hs-source-dirs:      src
+  main-is:             FileClient.hs
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
+                     , http-client
+                     , transformers
+                     , containers
+                     , servant-server
+                     , text
+                     , aeson
+                     , wai
+                     , warp
+                     , selda
+                     , selda-sqlite
+                     , websockets
+                     , servant-websockets
+                     , stm
+                     , time
+                     , network
+                     , base64
+                     , bytestring
+                     , email-validate
+                     , either
+                     , cryptohash-sha256
+                     , extra
+  ghc-options:         -Wall
+                       -Wcompat
+                       -Widentities
+                       -Wincomplete-record-updates
+                       -Wincomplete-uni-patterns
+                       -Wmissing-export-lists
+                       -Wmissing-home-modules
+                       -Wpartial-fields
+                       -Wredundant-constraints
