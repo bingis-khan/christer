@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:christer/persist/persist.dart';
+import 'package:christer/persist/user_context.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter_svg/svg.dart';
 import 'package:christer/theme/colors.dart';
@@ -11,22 +13,44 @@ class PickPhotoScreen extends StatefulWidget {
   _PickPhotoScreenState createState() => _PickPhotoScreenState();
 }
 
+const errorSnackBar = SnackBar(content: Text('Too many or no files selected.'));
+
 class _PickPhotoScreenState extends State<PickPhotoScreen> {
-  File? _image = null;
+  late Future<Image> _image;
 
   Future getImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['jpg', 'png', 'jpeg'],
     );
+
+    // Check if the user has exited already (we don't care then).
+    if (!mounted) return;
+
     if (result == null) return;
 
-    File file = File(result.files.single.path!);
+    if (!result.isSinglePick) {
+      ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
+      return;
+    }
 
-    // State is pointless here.
-    setState(() {
-      this._image = file;
-    });
+    var path = result.files.single.path!;
+    var user = UserContext.of(context);
+    var error = await uploadImage(user, path);
+
+    if (error != null) {
+      setState(() {
+        _image = fetchOwnImage(user);
+      });
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    var user = UserContext.of(context);
+    _image = fetchOwnImage(user);
   }
 
   @override
@@ -41,11 +65,17 @@ class _PickPhotoScreenState extends State<PickPhotoScreen> {
           child: Column(
         children: [
           SizedBox(height: 10),
-          (_image == null)
-              ? Image.asset("assets/images/profile.png",
-                  height: 150, width: 150)
-              : Image.file(File(_image!.path.toString()),
-                  height: 150, width: 150),
+          FutureBuilder(
+            future: _image,
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const CircularProgressIndicator();
+              }
+
+              var image = snapshot.requireData;
+              return image;
+            },
+          ),
           SizedBox(height: 40),
           CustomButton(
             title: 'Pick from Gallery',

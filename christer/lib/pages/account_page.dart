@@ -2,6 +2,7 @@ import 'package:christer/data/account_json.dart';
 import 'package:christer/pages/edit_page.dart';
 import 'package:christer/pages/settings_page.dart';
 import 'package:christer/pages/image_picker.dart';
+import 'package:christer/persist/user_context.dart';
 import 'package:christer/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
@@ -14,14 +15,15 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
-      return Scaffold(
-        backgroundColor: grey.withOpacity(0.2),
-        body: getBody(),
-      );
+    return Scaffold(
+      backgroundColor: grey.withOpacity(0.2),
+      body: getBody(),
+    );
   }
 
   Widget getBody() {
     var size = MediaQuery.of(context).size;
+    var user = UserContext.of(context);
     return ClipPath(
       clipper: OvalBottomBorderClipper(),
       child: Container(
@@ -47,9 +49,7 @@ class _AccountPageState extends State<AccountPage> {
               height: 15,
             ),
             Text(
-              account_json[0]['name'] +
-                  ", " +
-                  account_json[0]['age'].toString(),
+              user.email + ", " + user.password,
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600),
             ),
             SizedBox(
@@ -79,10 +79,9 @@ class _AccountPageState extends State<AccountPage> {
                         icon: Icon(Icons.settings),
                         iconSize: 35,
                         onPressed: () {
-                          Navigator.push(
+                          UserContext.push(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => const SettingsPage()),
+                            const SettingsPage(),
                           );
                         },
                       ),
@@ -127,10 +126,9 @@ class _AccountPageState extends State<AccountPage> {
                                 icon: Icon(Icons.camera_alt),
                                 iconSize: 45,
                                 onPressed: () {
-                                  Navigator.push(
+                                  UserContext.push(
                                     context,
-                                    MaterialPageRoute(
-                                        builder: (context) => PickPhotoScreen()),
+                                    PickPhotoScreen(),
                                   );
                                 },
                               ),
@@ -195,11 +193,7 @@ class _AccountPageState extends State<AccountPage> {
                         icon: Icon(Icons.edit),
                         iconSize: 35,
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const EditPage()),
-                          );
+                          UserContext.push(context, const EditPage());
                         },
                       ),
                     ),

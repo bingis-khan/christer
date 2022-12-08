@@ -13,7 +13,7 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final myController = TextEditingController();
-  late final Future<List<UserChatPresentation>> chats;
+  late Future<List<UserChatPresentation>> chats;
   String filter = '';
 
   @override
@@ -95,15 +95,13 @@ class _ChatPageState extends State<ChatPage> {
                       padding: EdgeInsets.all(10),
                       child: ListTile(
                         onTap: () {
-                          Navigator.push(
+                          UserContext.push(
                               context,
-                              MaterialPageRoute(
-                                  builder: (context) => UserChatPage(
-                                      userchat: UserChat(
-                                          id: chat.id,
-                                          name: chat.name,
-                                          messages:
-                                              fetchChat(user, chat.id)))));
+                              UserChatPage(
+                                  userchat: UserChat(
+                                      id: chat.id,
+                                      name: chat.name,
+                                      messages: fetchChat(user, chat.id))));
                         },
                         visualDensity:
                             VisualDensity(horizontal: 0, vertical: -4),

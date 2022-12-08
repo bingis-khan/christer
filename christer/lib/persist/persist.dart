@@ -2,7 +2,7 @@ import 'package:christer/model/message.dart';
 import 'package:christer/model/user_chat.dart';
 import 'package:flutter/material.dart';
 import 'package:christer/model/match.dart';
-
+import 'package:http/http.dart';
 import 'user_context.dart';
 
 // Basic stuff
@@ -32,6 +32,10 @@ Future<Image> fetchImage(int userId) async {
           'https://cdn.cloudflare.steamstatic.com/steam/apps/364190/ss_7e0e4b0cb2cf6d266b9814e4d51e06cc06d0a91a.1920x1080.jpg?t=1572321559'));
 }
 
+Future<Image> fetchOwnImage(User user) async {
+  return fetchImage(69);
+}
+
 Future<List<UserChatPresentation>> fetchDigest(User user) async {
   return List.generate(
       5,
@@ -41,4 +45,8 @@ Future<List<UserChatPresentation>> fetchDigest(User user) async {
 
 Future<List<Message>> fetchChat(User user, int otherID) async {
   return [];
+}
+
+Future<String?> uploadImage(User user, String path) {
+  return Future.delayed(const Duration(milliseconds: 1000)).then((_) => null);
 }

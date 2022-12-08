@@ -12,6 +12,13 @@ class UserContext extends InheritedWidget {
     return userContext!.user;
   }
 
+  // this is so bad, but I don't have time.
+  static void push(BuildContext context, Widget widget) {
+    var user = UserContext.of(context);
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => UserContext(user: user, child: widget)));
+  }
+
   @override
   bool updateShouldNotify(UserContext oldWidget) =>
       oldWidget.user.email != user.email ||

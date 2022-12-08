@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:christer/data/default_params.dart';
+import 'package:christer/main.dart';
+import 'package:christer/persist/user_context.dart';
 import 'package:flutter/material.dart';
 import 'package:christer/model/user_chat.dart';
 import 'package:christer/theme/colors.dart';
@@ -43,6 +45,8 @@ class _UserChatPageState extends State<UserChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    var user = UserContext.of(context);
+    ;
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.userchat.name),

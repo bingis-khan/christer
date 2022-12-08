@@ -39,7 +39,6 @@ dependencies:
   flutter_tindercard: ^0.2.0
   line_icons:
   flutter_svg:
-  flutter_custom_clippers: ^1.1.2
   swipe_cards: ^1.0.0
   http: ^0.13.5
   sync_http: ^0.3.1
@@ -50,6 +49,7 @@ dependencies:
   file_picker: ^5.2.3
   web_socket_channel: ^2.2.0
   sorted_list: ^1.0.0
+  flutter_custom_clippers: ^2.0.0
 
 dev_dependencies:
   flutter_test:
