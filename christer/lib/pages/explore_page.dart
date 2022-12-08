@@ -105,14 +105,25 @@ class _ExplorePageState extends State<ExplorePage> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Stack(children: [
-                  Container(
-                    width: size.width,
-                    height: size.height,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: current.image.image, fit: BoxFit.cover),
-                    ),
-                  ),
+                  FutureBuilder(
+                      future: current.image,
+                      builder: ((context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return niceLookingSpinnerFuckYou();
+                        } else if (snapshot.hasError) {
+                          return const Text('error???');
+                        }
+
+                        var image = snapshot.requireData;
+
+                        return Container(
+                          width: size.width,
+                          height: size.height,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: image.image, fit: BoxFit.cover)),
+                        );
+                      })),
                   Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(

@@ -1,3 +1,4 @@
+import 'package:christer/persist/persist.dart';
 import 'package:flutter/material.dart';
 
 class Match {
@@ -8,7 +9,7 @@ class Match {
   final int height;
   final String race;
   final String description;
-  final Image image;
+  final Future<Image> image;
 
   Match(
       {required this.id,
@@ -31,7 +32,5 @@ class Match {
       height: json['height'],
       race: json['race'],
       description: json['description'],
-      image: Image.network(
-          'https://cdn.cloudflare.steamstatic.com/steam/apps/364190/ss_7e0e4b0cb2cf6d266b9814e4d51e06cc06d0a91a.1920x1080.jpg?t=1572321559') //Image.network('$host/pic/${json['imageID'] as int}', headers: headers),
-      );
+      image: fetchImage(json['id']));
 }

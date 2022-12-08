@@ -1,3 +1,5 @@
+import 'package:christer/persist/persist.dart';
+import 'package:christer/persist/user_context.dart';
 import 'package:flutter/material.dart';
 import 'package:christer/model/user_chat.dart';
 import 'package:christer/theme/colors.dart';
@@ -11,14 +13,22 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final myController = TextEditingController();
-  List<UserChat> chats = chats_json;
+  late final Future<List<UserChatPresentation>> chats;
+  String filter = '';
 
-  void _updateChats(String name) {
-    final filtered_chats = chats_json.where((element) {
-      return element.name.toLowerCase().contains(name.toLowerCase());
-    }).toList();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    chats = fetchDigest(UserContext.of(context));
+  }
+
+  List<UserChatPresentation> filterChats(List<UserChatPresentation> chats) =>
+      chats.where((c) => c.name.toLowerCase().contains(filter)).toList();
+
+  void setFilter(String newFilter) {
     setState(() {
-      chats = filtered_chats;
+      filter = newFilter.toLowerCase();
     });
   }
 
@@ -38,6 +48,7 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget getBody() {
     var size = MediaQuery.of(context).size;
+    var user = UserContext.of(context);
     const MAX_LENGTH = 20;
     return ListView(
       children: [
@@ -58,7 +69,7 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   hintText: "Search"),
               controller: myController,
-              onChanged: _updateChats,
+              onChanged: setFilter,
             ),
           ),
         ),
@@ -66,71 +77,82 @@ class _ChatPageState extends State<ChatPage> {
           height: 5,
         ),
         Padding(
-          padding: const EdgeInsets.all(5),
-          child: Column(
-            children: List.generate(chats.length, (index) {
-              return Padding(
-                padding: EdgeInsets.all(10),
-                child: ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                UserChatPage(userchat: chats[index])));
-                  },
-                  visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                  contentPadding: EdgeInsets.only(
-                      left: 0.0, right: 0.0, top: 10, bottom: 10),
-                  leading: CircleAvatar(
-                    radius: 35,
-                    backgroundImage: AssetImage(chats[index].img),
-                  ),
-                  title: Text(
-                    chats[index].name,
-                    style: const TextStyle(
-                      fontSize: 22,
-                      color: white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  subtitle: Text(
-                    chats[index].messages.length > 0
-                        ? ((chats[index]
-                                    .messages[chats[index].messages.length - 1]
-                                    .isYours
-                                ? 'You: '
-                                : '') +
-                            (chats[index]
-                                        .messages[
-                                            chats[index].messages.length - 1]
-                                        .msg
-                                        .length <
-                                    MAX_LENGTH
-                                ? chats[index]
-                                    .messages[chats[index].messages.length - 1]
-                                    .msg
-                                : chats[index]
-                                        .messages[
-                                            chats[index].messages.length - 1]
-                                        .msg
-                                        .substring(0, MAX_LENGTH) +
-                                    ' ... ') +
-                            ' - ' +
-                            chats[index]
-                                .messages[chats[index].messages.length - 1]
-                                .created_at)
-                        : "Say hi to your new match!",
-                    style: const TextStyle(
-                      fontSize: 15,
-                      color: white,
-                    ),
-                  ),
-                ),
-              );
-            }),
-          ),
-        ),
+            padding: const EdgeInsets.all(5),
+            child: FutureBuilder(
+              future: chats,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return const Text('error');
+                } else if (!snapshot.hasData) {
+                  return const CircularProgressIndicator();
+                }
+
+                var ufChats = snapshot.requireData;
+                var chats = filterChats(ufChats);
+                return Column(
+                  children: chats.map((chat) {
+                    return Padding(
+                      padding: EdgeInsets.all(10),
+                      child: ListTile(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => UserChatPage(
+                                      userchat: UserChat(
+                                          id: chat.id,
+                                          name: chat.name,
+                                          messages:
+                                              fetchChat(user, chat.id)))));
+                        },
+                        visualDensity:
+                            VisualDensity(horizontal: 0, vertical: -4),
+                        contentPadding: EdgeInsets.only(
+                            left: 0.0, right: 0.0, top: 10, bottom: 10),
+                        leading: FutureBuilder(
+                          future: chat.img,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasError || !snapshot.hasData) {
+                              return const CircularProgressIndicator();
+                            }
+
+                            var image = snapshot.requireData;
+                            return CircleAvatar(
+                              radius: 35,
+                              backgroundImage: image.image,
+                            );
+                          },
+                        ),
+                        title: Text(
+                          chat.name,
+                          style: const TextStyle(
+                            fontSize: 22,
+                            color: white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Text(
+                          chat.lastMessage != null
+                              ? ((chat.lastMessage!.isYours ? 'You: ' : '') +
+                                  (chat.lastMessage!.msg.length < MAX_LENGTH
+                                      ? chat.lastMessage!.msg
+                                      : chat.lastMessage!.msg
+                                              .substring(0, MAX_LENGTH) +
+                                          ' ... ') +
+                                  ' - ' +
+                                  chat.lastMessage!.created_at)
+                              : "Say hi to your new match!",
+                          style: const TextStyle(
+                            fontSize: 15,
+                            color: white,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
+            )),
       ],
     );
   }
