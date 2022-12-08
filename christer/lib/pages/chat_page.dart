@@ -13,7 +13,7 @@ class _ChatPageState extends State<ChatPage> {
   final myController = TextEditingController();
   List<UserChat> chats = chats_json;
 
-  void _updateChats(String name){
+  void _updateChats(String name) {
     final filtered_chats = chats_json.where((element) {
       return element.name.toLowerCase().contains(name.toLowerCase());
     }).toList();
@@ -23,7 +23,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: black,
       body: getBody(),
@@ -57,8 +57,8 @@ class _ChatPageState extends State<ChatPage> {
                     color: black.withOpacity(0.5),
                   ),
                   hintText: "Search"),
-                  controller: myController,
-                  onChanged: _updateChats,
+              controller: myController,
+              onChanged: _updateChats,
             ),
           ),
         ),
@@ -72,47 +72,64 @@ class _ChatPageState extends State<ChatPage> {
               return Padding(
                 padding: EdgeInsets.all(10),
                 child: ListTile(
-                  onTap: (){
+                  onTap: () {
                     Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) =>  UserChatPage(userchat: chats[index]))
-                    );
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                UserChatPage(userchat: chats[index])));
                   },
                   visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                  contentPadding: EdgeInsets.only(left: 0.0, right: 0.0, top: 10, bottom: 10),
+                  contentPadding: EdgeInsets.only(
+                      left: 0.0, right: 0.0, top: 10, bottom: 10),
                   leading: CircleAvatar(
                     radius: 35,
                     backgroundImage: AssetImage(chats[index].img),
                   ),
-                  title: Text(chats[index].name, 
+                  title: Text(
+                    chats[index].name,
                     style: const TextStyle(
                       fontSize: 22,
                       color: white,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  subtitle: Text(chats[index].messages.length > 0 ? 
-                    (
-                      (chats[index].messages[chats[index].messages.length - 1].isYours ? 'You: ' : '') + 
-                      (
-                        chats[index].messages[chats[index].messages.length - 1].msg.length < MAX_LENGTH ? 
-                        chats[index].messages[chats[index].messages.length - 1].msg : 
-                        chats[index].messages[chats[index].messages.length - 1].msg.substring(0, MAX_LENGTH) + ' ... '
-                      ) + ' - ' + 
-                      chats[index].messages[chats[index].messages.length - 1].created_at
-                    ) :
-                    "Say hi to your new match!", 
-                      style: const TextStyle(
-                        fontSize: 15,
-                        color: white,
-                      ),
+                  subtitle: Text(
+                    chats[index].messages.length > 0
+                        ? ((chats[index]
+                                    .messages[chats[index].messages.length - 1]
+                                    .isYours
+                                ? 'You: '
+                                : '') +
+                            (chats[index]
+                                        .messages[
+                                            chats[index].messages.length - 1]
+                                        .msg
+                                        .length <
+                                    MAX_LENGTH
+                                ? chats[index]
+                                    .messages[chats[index].messages.length - 1]
+                                    .msg
+                                : chats[index]
+                                        .messages[
+                                            chats[index].messages.length - 1]
+                                        .msg
+                                        .substring(0, MAX_LENGTH) +
+                                    ' ... ') +
+                            ' - ' +
+                            chats[index]
+                                .messages[chats[index].messages.length - 1]
+                                .created_at)
+                        : "Say hi to your new match!",
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: white,
                     ),
-                  
+                  ),
                 ),
               );
-            }
-            ),
-          ), 
+            }),
+          ),
         ),
       ],
     );
