@@ -38,7 +38,7 @@ class _PickPhotoScreenState extends State<PickPhotoScreen> {
     var user = UserContext.of(context);
     var error = await uploadImage(user, path);
 
-    if (error != null) {
+    if (error == null) {
       setState(() {
         _image = fetchOwnImage(user);
       });
@@ -73,7 +73,14 @@ class _PickPhotoScreenState extends State<PickPhotoScreen> {
               }
 
               var image = snapshot.requireData;
-              return image;
+              var size = MediaQuery.of(context).size;
+              return Container(
+                width: size.width / 2,
+                height: size.height / 2,
+                decoration: BoxDecoration(
+                    image:
+                        DecorationImage(image: image.image, fit: BoxFit.cover)),
+              );
             },
           ),
           SizedBox(height: 40),

@@ -12,7 +12,7 @@ import Types.Suggestion (Suggestion)
 import Data.Int (Int64)
 import Servant.Multipart
 import qualified Data.ByteString.Lazy as LBS
-import Table (Verdict)
+import Table (Verdict, OMessage)
 import Data.List.NonEmpty (NonEmpty)
 import Data.Aeson.Types (FromJSON)
 
@@ -21,15 +21,6 @@ import Data.Aeson.Types (FromJSON)
 type App = ReaderT FilePath Handler
 
 
-
-
-data Message = Message
-  { content :: Text
-  , outgoing :: Bool
-  , sendDate :: UTCTime
-  } deriving Generic
-instance ToJSON Message
-instance FromJSON Message
 
 -- Whole API
 type API
@@ -52,7 +43,7 @@ type MainAPI
 
   -- Messaging
   :<|>  Auth :> "contacts" :> Get '[JSON] [ContactDigest]
-  :<|>  Auth :> "messages" :> Capture "recipient" Int64 :> Get '[JSON] [Message]
+  :<|>  Auth :> "messages" :> Capture "recipient" Int64 :> Get '[JSON] [OMessage]
 
 
 -- For some reason, no HasClient for multipart (despite importing these packages...)
@@ -61,3 +52,4 @@ type FileAPI
   -- Pics (fileserver)
   =     Auth :> "post-pic" :> MultipartForm Mem (MultipartData Mem) :> PostNoContent
   :<|>  "pic" :> Capture "id" Int64 :> Get '[OctetStream] (Headers '[Header "Content-Type" Text] LBS.ByteString)
+  :<|>  Auth :> "own-pic" :> Get '[OctetStream] (Headers '[Header "Content-Type" Text] LBS.ByteString)

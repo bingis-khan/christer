@@ -22,6 +22,16 @@ import Data.Time.Calendar (toGregorian)
 import Data.Time.Clock (utctDay)
 import Control.Monad (void)
 import Data.Text (pack)
+import Data.Aeson (ToJSON)
+import Data.Aeson.Types (FromJSON)
+
+data OMessage = OMessage
+  { ocontent :: Text
+  , outgoing :: Bool
+  , osendDate :: UTCTime
+  } deriving Generic
+instance ToJSON OMessage
+instance FromJSON OMessage
 
 
 -- Tables
@@ -301,16 +311,29 @@ mutualLikes Account { person } = do
 findContacts :: MonadSelda m => Account -> m [ContactDigest]
 findContacts acc@Account { person = u } = do
   xs <- query $ do
-    p <- mutualLikes acc
-    m <- lastMessage (literal u) (p ! #pid)
-    return $ p :*: m
-  return $ flip map xs $ \(p :*: m) -> ContactDigest
+    --p <- mutualLikes acc
+    p <- select lambsToTheSlaughter
+    restrict $ p ! #pid ./= literal u
+    return p
+  
+  now <- liftIO getCurrentTime
+  return $ flip map xs $ \(p) -> ContactDigest
     { T.sender = fromId (pid p)
-    , T.lastMessage = content m
-    , T.lastMessageDate = sendDate m
+    , T.lastMessage = mempty
+    , T.lastMessageDate = now
     , T.senderData = personToPersonalData p
     }
 
+getMessages :: MonadSelda m => Account -> Int64 -> m [OMessage]
+getMessages acc@Account { person = u } other = do
+  let lu = literal u
+      lo = literal (toId other :: ID Person)
+  msgs <- query $ do
+    m <- select messages
+    restrict $ m ! #from .== lu .&& m ! #to .== lo .|| m ! #from .== lu .&& m ! #to .== lo
+    return m
+  
+  return $ map (\m -> OMessage (content m) (Table.from m == u) (sendDate m) ) msgs
 
 -- Pictures
 addPic :: (MonadSelda m, MonadMask m) => Account -> Text -> LBS.ByteString -> m ()
@@ -328,3 +351,8 @@ getPic iPersonID =
     pic <- select pics
     restrict $ pic ! #picOf .== literal personId
     return $ pic ! #picMIME :*: pic ! #picData
+
+getOwnPic :: MonadSelda m => Account -> m (Maybe (Text, LBS.ByteString))
+getOwnPic acc = do
+  u <- getYourself acc
+  getPic (fromId $ pid u)

@@ -131,14 +131,7 @@ class _ChatPageState extends State<ChatPage> {
                         ),
                         subtitle: Text(
                           chat.lastMessage != null
-                              ? ((chat.lastMessage!.isYours ? 'You: ' : '') +
-                                  (chat.lastMessage!.msg.length < MAX_LENGTH
-                                      ? chat.lastMessage!.msg
-                                      : chat.lastMessage!.msg
-                                              .substring(0, MAX_LENGTH) +
-                                          ' ... ') +
-                                  ' - ' +
-                                  chat.lastMessage!.created_at)
+                              ? chat.lastMessage!
                               : "Say hi to your new match!",
                           style: const TextStyle(
                             fontSize: 15,

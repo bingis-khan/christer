@@ -237,7 +237,7 @@ class _ExplorePageState extends State<ExplorePage> {
 }
 
 Future<CardContext> fillCards(User user) => fetchMatches(user).then((items) {
-      var cards = items.map((i) => toSwipeItem(user, i)).toList();
+      var cards = items!.map((i) => toSwipeItem(user, i)).toList();
       return CardContext(
           engine: MatchEngine(swipeItems: cards), matches: items);
     });

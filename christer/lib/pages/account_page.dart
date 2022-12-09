@@ -2,6 +2,7 @@ import 'package:christer/data/account_json.dart';
 import 'package:christer/pages/edit_page.dart';
 import 'package:christer/pages/settings_page.dart';
 import 'package:christer/pages/image_picker.dart';
+import 'package:christer/persist/persist.dart';
 import 'package:christer/persist/user_context.dart';
 import 'package:christer/theme/colors.dart';
 import 'package:flutter/material.dart';
@@ -36,20 +37,26 @@ class _AccountPageState extends State<AccountPage> {
         child: Padding(
           padding: const EdgeInsets.only(left: 30, right: 30, bottom: 40),
           child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-            Container(
-              width: 140,
-              height: 140,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                      image: AssetImage(account_json[0]['img']),
-                      fit: BoxFit.cover)),
-            ),
+            FutureBuilder(
+                future: fetchOwnImage(user),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return CircularProgressIndicator();
+
+                  var image = snapshot.requireData;
+                  return Container(
+                    width: 140,
+                    height: 140,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                            image: image.image, fit: BoxFit.cover)),
+                  );
+                }),
             SizedBox(
               height: 15,
             ),
             Text(
-              user.email + ", " + user.password,
+              'Wojtek, 12',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600),
             ),
             SizedBox(
@@ -211,12 +218,11 @@ class _AccountPageState extends State<AccountPage> {
                 ),
               ],
             ),
-            SizedBox(height: 25,),
-            CustomButton(
-              title: 'Log out',
-              icon: Icons.logout,
-              onClick: () => {}
+            SizedBox(
+              height: 25,
             ),
+            CustomButton(
+                title: 'Log out', icon: Icons.logout, onClick: () => {}),
           ]),
         ),
       ),

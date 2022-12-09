@@ -25,12 +25,12 @@ class Match {
   String toString() => firstName;
 
   factory Match.fromJson(Map<String, dynamic> json) => Match(
-      id: json['id'],
-      firstName: json['firstName'],
-      lastName: json['lastName'],
-      age: json['age'],
-      height: json['height'],
-      race: json['race'],
+      id: json['userID'],
+      firstName: json['firstName'] ?? 'Anonymous',
+      lastName: json['lastName'] ?? 'Anonymous',
+      age: json['age'] ?? -1,
+      height: json['height'] ?? -1,
+      race: json['race'] ?? '???',
       description: json['description'],
-      image: fetchImage(json['id']));
+      image: fetchImage(json['userID']));
 }

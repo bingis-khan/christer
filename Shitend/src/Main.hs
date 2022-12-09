@@ -12,7 +12,7 @@ import Data.Aeson.Types (FromJSON)
 import Data.Text
 import Control.Monad.Trans.Reader (ReaderT, runReaderT, ask)
 import Database.Selda
-import Table (initDB, Verdict, addPic, getPic, findContacts, findMatches, decideMatch, editProfile)
+import Table (initDB, Verdict, addPic, getPic, findContacts, findMatches, decideMatch, editProfile, getOwnPic, OMessage, getMessages)
 import Servant.API.WebSocket (WebSocketPending, WebSocket)
 
 import qualified Network.WebSockets as WS
@@ -41,6 +41,7 @@ import Data.Functor ((<&>))
 import Control.Concurrent (forkIO)
 import Control.Monad (void)
 import API
+import Control.Concurrent.STM
 
 
 
@@ -71,8 +72,6 @@ postPic acc mpd = do
       -- Basic & bad validation
       let mime = fdFileCType pic
       liftIO $ print mime
-      unless ("image/" `isPrefixOf` mime) $
-        throw $ err400 { errBody = "Invalid MIME type." }
 
       let content = fdPayload pic
       withDB $ addPic acc mime content
@@ -82,6 +81,12 @@ postPic acc mpd = do
 
 pic :: Int64 -> App (Headers '[Header "Content-Type" Text] LBS.ByteString)
 pic picId = withDB (getPic picId) >>= \case
+  Nothing -> liftIO (LBS.readFile "./img/ted.jpg") <&> addHeader "image/jpeg"  -- Oh no, it's so bad.
+  Just (mime, content) -> do
+    return $ addHeader mime content
+
+ownPic :: Account -> App (Headers '[Header "Content-Type" Text] LBS.ByteString)
+ownPic acc = withDB (getOwnPic acc) >>= \case
   Nothing -> throw err404  -- Oh no, it's so bad.
   Just (mime, content) -> do
     return $ addHeader mime content
@@ -89,13 +94,14 @@ pic picId = withDB (getPic picId) >>= \case
 contacts :: Account -> App [ContactDigest]
 contacts acc = withDB $ findContacts acc
 
-messages :: Account -> Int64 -> App [Message]
-messages = undefined
+messages :: Account -> Int64 -> App [OMessage]
+messages acc other = withDB $ getMessages acc other
 
 server :: ServerT API App
 server 
   =     (postPic
-  :<|>  pic)
+  :<|>  pic
+  :<|>  ownPic)
   :<|>  register
   :<|>  edit
   :<|>  current
@@ -122,9 +128,13 @@ main = do
   initDB db
 
 
-  -- void $ forkIO $ WS.runServer "localhost" 8080 $ WS.acceptRequest >=> \conn -> forever $ do
-  --   x <- WS.receiveData conn
-  --   WS.sendTextData conn (x :: Text)
+  conns <- newTVarIO []
+
+  void $ forkIO $ WS.runServer "localhost" 8081 $ WS.acceptRequest >=> \conn -> forever $ do
+    x <- WS.receiveData conn
+    WS.sendTextData conn (x :: Text)
+
+  --void $ forkIO $ WS.runServer "localhost" 8081 $ WS.acceptRequest >=> chatApp conns
   
   startServer db
   

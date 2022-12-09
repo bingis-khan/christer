@@ -26,7 +26,10 @@ class _UserChatPageState extends State<UserChatPage> {
   @override
   void initState() {
     super.initState();
+  }
 
+  @override
+  void didChangeDependencies() {
     widget.userchat.messages.then((msgs) {
       incoming = _channel.stream.listen((msg) {
         setState(() {

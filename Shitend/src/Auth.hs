@@ -1,5 +1,5 @@
 {-# LANGUAGE DataKinds, OverloadedStrings, TypeOperators, NamedFieldPuns, LambdaCase, OverloadedLabels, DeriveGeneric #-}
-module Auth (Auth, serverContext, Account(..), RegisterError(..), register) where
+module Auth (Auth, serverContext, Account(..), RegisterError(..), register, login) where
 
 import Servant (BasicAuthResult(Authorized, Unauthorized), Context(EmptyContext), BasicAuth, BasicAuthCheck(..), BasicAuthData (BasicAuthData), Context ((:.)))
 import Database.Selda (ID, toId, SeldaM, insert_, def, query, select, limit, (!), type (:*:) ((:*:)), restrict, (.==), literal, suchThat, toLower)
