@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'dart:io';
+import 'package:christer/model/photo_model.dart';
 import 'package:christer/persist/persist.dart';
 import 'package:christer/persist/user_context.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +12,19 @@ import 'package:christer/theme/colors.dart';
 //import 'package:path_provider/path_provider.dart';
 import 'package:file_picker/file_picker.dart';
 
+Future<Image> convertFileToImage(File picture) async {
+  List<int> imageBase64 = picture.readAsBytesSync();
+  String imageAsString = base64Encode(imageBase64);
+  Uint8List uint8list = base64.decode(imageAsString);
+  Image image = Image.memory(uint8list);
+  return image;
+}
+
 class PickPhotoScreen extends StatefulWidget {
+  final PhotoModel photoModel;
+
+  PickPhotoScreen({Key? key, required this.photoModel}) : super(key: key);
+
   @override
   _PickPhotoScreenState createState() => _PickPhotoScreenState();
 }
@@ -38,9 +54,16 @@ class _PickPhotoScreenState extends State<PickPhotoScreen> {
     var user = UserContext.of(context);
     var error = await uploadImage(user, path);
 
+    var file = File(path);
+
+    Image gotImage = await convertFileToImage(file);
+
+    widget.photoModel.setImage(gotImage);
+
     if (error == null) {
       setState(() {
         _image = fetchOwnImage(user);
+        widget.photoModel.setImage(gotImage);
       });
     }
   }
@@ -72,7 +95,7 @@ class _PickPhotoScreenState extends State<PickPhotoScreen> {
                 return const CircularProgressIndicator();
               }
 
-              var image = snapshot.requireData;
+              var image = widget.photoModel.getImage == null ? snapshot.requireData : widget.photoModel.getImage!;
               var size = MediaQuery.of(context).size;
               return Container(
                 width: size.width / 2,

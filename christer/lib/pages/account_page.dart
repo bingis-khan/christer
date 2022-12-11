@@ -41,8 +41,8 @@ class _AccountPageState extends State<AccountPage> {
           child: 
             ChangeNotifierProvider(
               create: (_) => PhotoModel(),
-              child: 
-            
+              builder: (context, child) {
+                return 
                 Column(mainAxisAlignment: MainAxisAlignment.end, children: [
                   FutureBuilder(
                       future: fetchOwnImage(user),
@@ -57,7 +57,7 @@ class _AccountPageState extends State<AccountPage> {
                               shape: BoxShape.circle,
                               image: DecorationImage(
                                   image: 
-                                    Provider.of<PhotoModel>(context).getImage == null ? image.image : Provider.of<PhotoModel>(context).getImage!.image
+                                    Provider.of<PhotoModel>(context, listen: false).getImage == null ? image.image : Provider.of<PhotoModel>(context, listen: false).getImage!.image
                                     , fit: BoxFit.cover)),
                         );
                       }),
@@ -144,7 +144,8 @@ class _AccountPageState extends State<AccountPage> {
                                       onPressed: () {
                                         UserContext.push(
                                           context,
-                                          PickPhotoScreen(),
+                                          PickPhotoScreen(photoModel: Provider.of<PhotoModel>(context, listen: false),)
+                                          ,
                                         );
                                       },
                                     ),
@@ -232,7 +233,8 @@ class _AccountPageState extends State<AccountPage> {
                   ),
                   CustomButton(
                       title: 'Log out', icon: Icons.logout, onClick: () => {}),
-                ]),
+                ]);
+            },
           ),
         ),
       ),
