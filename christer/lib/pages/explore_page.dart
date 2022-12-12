@@ -6,6 +6,7 @@ import 'package:christer/data/icons.dart';
 import 'package:christer/theme/colors.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:christer/model/match.dart';
@@ -26,12 +27,11 @@ class _ExplorePageState extends State<ExplorePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _cardContext = fillCards(UserContext.of(context));
+    _cardContext = fillCards(context.watch<UserContext>().user);
   }
 
   @override
   Widget build(BuildContext context) {
-    print('${UserContext.of(context).email}');
     return FutureBuilder(
       future: _cardContext,
       builder: ((context, snapshot) {
@@ -83,7 +83,7 @@ class _ExplorePageState extends State<ExplorePage> {
 
   Widget getBody(MatchEngine engine, List<Match> items) {
     var size = MediaQuery.of(context).size;
-    var user = UserContext.of(context);
+    var user = context.watch<UserContext>().user;
     return SwipeCards(
       matchEngine: engine,
       itemBuilder: (BuildContext context, int index) {

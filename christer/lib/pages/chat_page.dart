@@ -5,6 +5,7 @@ import 'package:christer/model/user_chat.dart';
 import 'package:christer/theme/colors.dart';
 import 'package:christer/data/chats_json.dart';
 import 'package:christer/pages/user_chat_page.dart';
+import 'package:provider/provider.dart';
 
 class ChatPage extends StatefulWidget {
   @override
@@ -20,7 +21,7 @@ class _ChatPageState extends State<ChatPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    chats = fetchDigest(UserContext.of(context));
+    chats = fetchDigest(context.watch<UserContext>().user);
   }
 
   List<UserChatPresentation> filterChats(List<UserChatPresentation> chats) =>
@@ -48,7 +49,7 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget getBody() {
     var size = MediaQuery.of(context).size;
-    var user = UserContext.of(context);
+    var user = context.watch<UserContext>();
     const MAX_LENGTH = 20;
     return ListView(
       children: [
@@ -95,13 +96,14 @@ class _ChatPageState extends State<ChatPage> {
                       padding: EdgeInsets.all(10),
                       child: ListTile(
                         onTap: () {
-                          UserContext.push(
-                              context,
-                              UserChatPage(
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => UserChatPage(
                                   userchat: UserChat(
                                       id: chat.id,
                                       name: chat.name,
-                                      messages: fetchChat(user, chat.id))));
+                                      messages: fetchChat(
+                                          context.watch<UserContext>().user,
+                                          chat.id)))));
                         },
                         visualDensity:
                             VisualDensity(horizontal: 0, vertical: -4),

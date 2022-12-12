@@ -7,17 +7,19 @@ import 'package:christer/theme/colors.dart';
 //import 'package:image_picker/image_picker.dart';
 //import 'package:path_provider/path_provider.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:provider/provider.dart';
+
+import '../main.dart';
+import 'account_page.dart';
 
 class PickPhotoScreen extends StatefulWidget {
   @override
-  _PickPhotoScreenState createState() => _PickPhotoScreenState();
+  State<PickPhotoScreen> createState() => _PickPhotoScreenState();
 }
 
 const errorSnackBar = SnackBar(content: Text('Too many or no files selected.'));
 
 class _PickPhotoScreenState extends State<PickPhotoScreen> {
-  late Future<Image> _image;
-
   Future getImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -35,22 +37,12 @@ class _PickPhotoScreenState extends State<PickPhotoScreen> {
     }
 
     var path = result.files.single.path!;
-    var user = UserContext.of(context);
+    var user = context.read<UserContext>().user;
     var error = await uploadImage(user, path);
-
     if (error == null) {
-      setState(() {
-        _image = fetchOwnImage(user);
-      });
+      if (!mounted) return;
+      context.read<UserPhoto>().set(fetchOwnImage(user));
     }
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    var user = UserContext.of(context);
-    _image = fetchOwnImage(user);
   }
 
   @override
@@ -66,7 +58,7 @@ class _PickPhotoScreenState extends State<PickPhotoScreen> {
         children: [
           SizedBox(height: 10),
           FutureBuilder(
-            future: _image,
+            future: context.watch<UserPhoto>().image,
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return const CircularProgressIndicator();

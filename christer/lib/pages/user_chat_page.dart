@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:christer/model/user_chat.dart';
 import 'package:christer/theme/colors.dart';
 import 'package:christer/model/message.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class UserChatPage extends StatefulWidget {
@@ -48,8 +49,7 @@ class _UserChatPageState extends State<UserChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    var user = UserContext.of(context);
-    ;
+    var user = context.watch<UserContext>().user;
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.userchat.name),

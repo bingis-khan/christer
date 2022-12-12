@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:christer/data/default_params.dart';
 import 'package:christer/model/message.dart';
@@ -59,7 +60,8 @@ Future<Image> fetchImage(int userId) async {
 }
 
 Future<Image> fetchOwnImage(User user) async {
-  return Image.network('$host/own-pic', headers: authHeaders(user)); // todo
+  return Image.network('$host/own-pic?dummy=${Random().nextInt(420133769)}',
+      headers: authHeaders(user)); // todo
 }
 
 Future<List<UserChatPresentation>> fetchDigest(User user) async {
@@ -79,7 +81,7 @@ Future<String?> uploadImage(User user, String path) async {
   request.files.add(await http.MultipartFile.fromPath('file', path));
 
   return await request.send().then((response) {
-    if (response.statusCode == 200) return null;
+    if (response.statusCode == 204) return null;
     return 'Error: ${response.statusCode}';
   });
 }

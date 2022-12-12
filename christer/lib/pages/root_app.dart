@@ -1,69 +1,85 @@
-
 import 'package:christer/pages/edit_page.dart';
 import 'package:christer/pages/settings_page.dart';
+import 'package:christer/persist/persist.dart';
+import 'package:christer/persist/user_context.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:christer/theme/colors.dart';
 import 'package:christer/pages/chat_page.dart';
 import 'package:christer/pages/explore_page.dart';
 import 'package:christer/pages/account_page.dart';
+import 'package:provider/provider.dart';
+
+import 'login.dart';
 
 class RootApp extends StatefulWidget {
-    @override
-    _RootAppState createState() => _RootAppState();
+  @override
+  _RootAppState createState() => _RootAppState();
 }
 
 class _RootAppState extends State<RootApp> {
-    int pageIndex = 0;
+  int pageIndex = 0;
 
-    @override
-    Widget build(BuildContext context){
-        return Scaffold(
+  @override
+  Widget build(BuildContext context) {
+    var userContext = context.watch<UserContext>();
+
+    return userContext.isLoggedIn()
+        ? Scaffold(
             backgroundColor: white,
             appBar: getAppBar(),
             body: getBody(),
-        );
-    }
+          )
+        : const LoginScreen();
+  }
 
-    PreferredSizeWidget getAppBar() {
-        var items = [
-            pageIndex == 0 ? "assets/images/explore_active_icon.svg" : "assets/images/explore_icon.svg",
-            pageIndex == 1 ? "assets/images/chat_active_icon.svg" : "assets/images/chat_icon.svg",
-            pageIndex == 2 ? "assets/images/account_active_icon.svg" : "assets/images/account_icon.svg"
-        ];
+  PreferredSizeWidget getAppBar() {
+    var items = [
+      pageIndex == 0
+          ? "assets/images/explore_active_icon.svg"
+          : "assets/images/explore_icon.svg",
+      pageIndex == 1
+          ? "assets/images/chat_active_icon.svg"
+          : "assets/images/chat_icon.svg",
+      pageIndex == 2
+          ? "assets/images/account_active_icon.svg"
+          : "assets/images/account_icon.svg"
+    ];
 
-        return AppBar(
-                backgroundColor: black,
-                elevation: 0,
-                title: Padding(
-                    padding: const EdgeInsets.only(left: 10, right: 10),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: List.generate(items.length, (index){
-                            return IconButton(
-                                onPressed: () {
-                                    setState((){
-                                        pageIndex = index;
-                                    });
-                                },
-                                icon: SvgPicture.asset(items[index]),
-                            );
-                        }),
-                    ),
-                ),
+    return AppBar(
+      backgroundColor: black,
+      elevation: 0,
+      title: Padding(
+        padding: const EdgeInsets.only(left: 10, right: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: List.generate(items.length, (index) {
+            return IconButton(
+              onPressed: () {
+                setState(() {
+                  pageIndex = index;
+                });
+              },
+              icon: SvgPicture.asset(items[index]),
             );
-    }
+          }),
+        ),
+      ),
+    );
+  }
 
-    Widget getBody() {
-        return IndexedStack(
-            index: pageIndex,
-            children: [
-                ExplorePage(),
-                ChatPage(),
-                AccountPage(),
-                EditPage(),
-                SettingsPage()
-            ],
-        );
-    }
+  Widget getBody() {
+    var user = context.watch<UserContext>();
+    print(user.user);
+    return IndexedStack(
+      index: pageIndex,
+      children: [
+        ExplorePage(),
+        ChatPage(),
+        AccountPage(),
+        EditPage(),
+        SettingsPage()
+      ],
+    );
+  }
 }

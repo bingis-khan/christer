@@ -1,28 +1,23 @@
 import 'package:flutter/material.dart';
 
-class UserContext extends InheritedWidget {
-  final User user;
+class UserContext extends ChangeNotifier {
+  User? _user;
 
-  const UserContext({super.key, required this.user, required super.child});
+  UserContext();
 
-  static User of(BuildContext context) {
-    final userContext =
-        context.dependOnInheritedWidgetOfExactType<UserContext>();
-    assert(userContext != null, 'No UserContext found - weird.');
-    return userContext!.user;
+  User get user => _user!;
+
+  bool isLoggedIn() => _user != null;
+
+  void login(User user) {
+    _user = user;
+    notifyListeners();
   }
 
-  // this is so bad, but I don't have time.
-  static void push(BuildContext context, Widget widget) {
-    var user = UserContext.of(context);
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => UserContext(user: user, child: widget)));
+  void logout() {
+    _user = null;
+    notifyListeners();
   }
-
-  @override
-  bool updateShouldNotify(UserContext oldWidget) =>
-      oldWidget.user.email != user.email ||
-      oldWidget.user.password != user.password;
 }
 
 class User {

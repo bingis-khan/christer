@@ -2,6 +2,7 @@ import 'package:christer/pages/root_app.dart';
 import 'package:christer/persist/user_context.dart';
 import 'package:christer/theme/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'account_page.dart';
 
 class EditPage extends StatelessWidget {
@@ -25,7 +26,6 @@ class FormPage extends StatefulWidget {
 class _FormPageState extends State<FormPage> {
   @override
   Widget build(BuildContext context) {
-    var user = UserContext.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
